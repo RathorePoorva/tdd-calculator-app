@@ -17,17 +17,78 @@ class Calculator extends React.Component {
     storedValue: "",
   };
   //to update the display of the screen
-  updateDisplay = () => {
-    console.log("update display");
+  updateDisplay = (value) => {
+    let { displayValue } = this.state;
+
+    //prevent multiple occurence of  "." operator
+    if (value === "." && displayValue.includes(".")) {
+      value = "";
+    }
+    if (value === "ce") {
+      //delete last char of displayValue
+      displayValue = displayValue.substr(0, displayValue.length - 1);
+      if (displayValue === "") displayValue = "0";
+    } else {
+      //replace displayValue with value if displayValue=0 else concatenate it
+      displayValue === "0" ? (displayValue = value) : (displayValue += value);
+    }
+    this.setState({ displayValue });
   };
   //to call the operator for operation
   callOperator = () => {
-    console.log("call operator");
+    let { displayValue, selectedOperator, storedValue } = this.state;
+    const tempStoredValue = displayValue;
+    displayValue = parseFloat(displayValue, 10);
+    storedValue = parseFloat(storedValue, 10);
+    console.log(displayValue);
+    console.log(storedValue);
+    console.log("******");
+    //perform operation
+    switch (selectedOperator) {
+      case "+":
+        displayValue = storedValue + displayValue;
+        break;
+      case "-":
+        displayValue = storedValue - displayValue;
+        break;
+      case "*":
+        displayValue = storedValue * displayValue;
+        break;
+      case "/":
+        displayValue = storedValue / displayValue;
+        break;
+      default:
+        displayValue = "0";
+    }
+    console.log(displayValue);
+    displayValue = displayValue.toString();
+    selectedOperator = "";
+
+    if (displayValue === "NaN" || displayValue === "infinity") {
+      displayValue = "0";
+    }
+    this.setState({
+      displayValue,
+      selectedOperator,
+      storedValue: tempStoredValue,
+    });
   };
   //to set the operator for operation
-  setOperator = () => {
-    console.log("set operator");
+  setOperator = (value) => {
+    let { displayValue, selectedOperator, storedValue } = this.state;
+    if (selectedOperator === "") {
+      //when selectedOperator is empty
+      //update storedValue to displayValue
+      storedValue = displayValue;
+      displayValue = "0";
+      selectedOperator = value;
+    } else {
+      //when selectedOperator is not an empty string
+      selectedOperator = value;
+    }
+    this.setState({ displayValue, selectedOperator, storedValue });
   };
+
   render = () => {
     const { displayValue, numbers, operators } = this.state;
     return (
